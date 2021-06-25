@@ -26,11 +26,12 @@ app.post("/insert", async (req, res) => {
     res.send(err);
   }
 });
-app.put("/edit", async (req, res) => {
+app.put("/edit/:id", async (req, res) => {
+  const id = req.params.id;
   const emp = req.body;
   // console.log(emp);
   try {
-    await Employee.findByIdAndUpdate(emp._id, emp, (err, docs) => {
+    await Employee.findByIdAndUpdate(id, emp, (err, docs) => {
       if (err) {
         console.log(err);
       } else {
