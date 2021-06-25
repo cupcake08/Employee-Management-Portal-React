@@ -53,7 +53,7 @@ const Table = () => {
   };
   //updating on server
   const update = (newData) => {
-    Axios.put("http://localhost:8000/edit", newData).then((res) => {
+    Axios.put(`http://localhost:8000/edit/${newData._id}`, newData).then((res) => {
       console.log("updated value");
     });
   };
