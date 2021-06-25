@@ -4,7 +4,7 @@
 
 ![UI](./client/public/normal.png)
 
-1. ### Add Employee
+1. **Add Employee**
 
    This contains following details-
 
@@ -19,13 +19,13 @@
    _Click on `+` icon to add an employee_
    ![Photo](./client/public/Add.png)
 
-2. ### Delete Employee
+2. **Delete Employee**
 
 To Delete an Employee Simply Click on `delete` icon , that will delete the employee details from the database.
 
-3. ### Update Employee Details
+3. **Update Employee Details**
    Click on `pencil` icon and change the details as required and then hit `correct` icon to save the details or `X` icon to cancel.
-4. ### Show All Employee details in a table with basic searching and pagination
+4. **Show All Employee details in a table with basic searching and pagination**
    _At bottom right corner of table there is pagination option available-> keep track of pages_
    ![normal](./client/public/normal.png)
    _At top right corner of table there is search option available -> search the employee from a big list easily._
