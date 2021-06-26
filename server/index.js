@@ -30,6 +30,7 @@ app.put("/edit/:id", async (req, res) => {
   const id = req.params.id;
   const emp = req.body;
   // console.log(emp);
+  console.log(emp, " ", id);
   try {
     await Employee.findByIdAndUpdate(id, emp, (err, docs) => {
       if (err) {
@@ -59,8 +60,14 @@ app.delete("/remove/:id", async (req, res) => {
     res.send(err);
   }
 });
+//implementing api pagination
 app.get("/read", async (req, res) => {
-  const emplyees = await Employee.find({});
+  let page = parseInt(req.query.page);
+  let limit = parseInt(req.query.size);
+  console.log(page, limit);
+  let skip = (page - 1) * limit;
+  console.log(skip);
+  const emplyees = await Employee.find().limit(limit).skip(skip);
   res.send(emplyees);
 });
 app.listen(8000, () => {
