@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
 const employeeSchema = new mongoose.Schema({
+  idTemp:{
+    type:Number,
+    required:true
+  },
   name: {
     type: String,
     required: [true, "Name is required"],
