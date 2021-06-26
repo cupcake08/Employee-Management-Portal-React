@@ -1,23 +1,12 @@
 import MaterialTable from "material-table";
-import { useState, useEffect } from "react";
 import Axios from "axios";
 import "@material-ui/icons";
-let outer = 1;
 const Table = () => {
-  const [data, setData] = useState([]);
-  useEffect(() => {
-    let __id = 1;
-    Axios.get("http://localhost:8000/read").then((res) => {
-      const temp = res.data;
-      temp.map((i) => (i.id = __id++));
-      outer = __id;
-      setData(temp);
-    });
-  }, []);
+  let outer = 1;
   const columns = [
     {
       title: "ID",
-      field: "id",
+      field: "idTemp",
       editable: "never",
     },
     {
@@ -53,9 +42,11 @@ const Table = () => {
   };
   //updating on server
   const update = (newData) => {
-    Axios.put(`http://localhost:8000/edit/${newData._id}`, newData).then((res) => {
-      console.log("updated value");
-    });
+    Axios.put(`http://localhost:8000/edit/${newData._id}`, newData).then(
+      (res) => {
+        console.log("updated value");
+      }
+    );
   };
   //deleting from server side
   const deleteData = (data) => {
@@ -66,15 +57,39 @@ const Table = () => {
     <div>
       <MaterialTable
         title="Employees Records"
-        data={data}
+        data={(query) =>
+          new Promise((resolve, reject) => {
+            // prepare your data and then call resolve like this:
+            let __id = 1;
+            let url = `http://localhost:8000/read?`;
+            url += "size=" + query.pageSize;
+            url += "&page=" + (query.page + 1);
+            console.log(url);
+            fetch(url)
+              .then((response) => response.json())
+              .then((res) => {
+                console.log(res);
+                const temp = res;
+                for(let i=0;i<temp.length;i++){
+                  console.log(temp[i].idTemp);
+                  temp[i].idTemp=__id++;
+                }
+                update(temp);
+                resolve({
+                  data: temp,
+                  page: query.page,
+                  totalCount: query.pageSize + 1,
+                });
+              });
+          })
+        }
         columns={columns}
         editable={{
           onRowAdd: (newData) =>
             new Promise((resolve, reject) => {
               setTimeout(() => {
+                newData.idTemp = outer++;
                 add(newData);
-                newData.id = outer++;
-                setData([...data, newData]);
                 resolve();
               }, 1000);
             }),
@@ -82,24 +97,14 @@ const Table = () => {
             new Promise((resolve, reject) => {
               setTimeout(() => {
                 update(newData);
-                const dataUpdate = [...data];
-                const index = oldData.tableData.id;
-                dataUpdate[index] = newData;
-                setData([...dataUpdate]);
                 resolve();
               }, 1000);
             }),
           onRowDelete: (oldData) =>
             new Promise((resolve, reject) => {
               setTimeout(() => {
-                deleteData(oldData);
-                const dataDelete = [...data];
-                const index = oldData.tableData.id;
-                dataDelete.splice(index, 1);
-                let x = 1;
                 outer--;
-                dataDelete.map((i) => (i.id = x++));
-                setData([...dataDelete]);
+                deleteData(oldData);
                 resolve();
               }, 1000);
             }),
