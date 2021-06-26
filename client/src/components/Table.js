@@ -73,6 +73,7 @@ const Table = () => {
                 for(let i=0;i<temp.length;i++){
                   console.log(temp[i].idTemp);
                   temp[i].idTemp=__id++;
+                  outer++;
                 }
                 update(temp);
                 resolve({
