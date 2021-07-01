@@ -20,7 +20,6 @@ app.post("/insert", async (req, res) => {
   const employee = new Employee(req.body);
   try {
     await employee.save();
-    console.log(employee);
     res.send("inserted");
   } catch (err) {
     res.send(err);
@@ -64,10 +63,11 @@ app.delete("/remove/:id", async (req, res) => {
 app.get("/read", async (req, res) => {
   let page = parseInt(req.query.page);
   let limit = parseInt(req.query.size);
-  console.log(page, limit);
+  if(!page) page = 1;
+  if(!limit) limit=5;
   let skip = (page - 1) * limit;
-  console.log(skip);
-  const emplyees = await Employee.find().limit(limit).skip(skip);
+  const emplyees = await Employee.find()
+  .limit(limit).skip(skip);
   res.send(emplyees);
 });
 app.listen(8000, () => {
