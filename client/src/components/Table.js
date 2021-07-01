@@ -1,12 +1,14 @@
 import MaterialTable from "material-table";
 import Axios from "axios";
 import "@material-ui/icons";
+import {useState} from 'react';
 const Table = () => {
-  let outer = 1;
+  const [page,setPage] = useState(1);
+  const [size,setSize] = useState(5);
   const columns = [
     {
       title: "ID",
-      field: "idTemp",
+      render:(rowData) => rowData.tableData.id+1 + ((page)*size),
       editable: "never",
     },
     {
@@ -18,6 +20,7 @@ const Table = () => {
       title: "Gender",
       field: "gender",
       lookup: { male: "Male", female: "Female", other: "Other" },
+      validate:(rowData) => rowData.gender !==""
     },
     {
       title: "Salary",
@@ -29,6 +32,7 @@ const Table = () => {
       title: "Team",
       field: "team",
       lookup: { alpha: "Alpha", beta: "Beta", gamma: "Gamma" },
+      validate:(rowData) => rowData.team !==""
     },
     {
       title: "Address",
@@ -50,7 +54,7 @@ const Table = () => {
   };
   //deleting from server side
   const deleteData = (data) => {
-    console.log(data._id);
+    // console.log(data._id);
     Axios.delete(`http://localhost:8000/remove/${data._id}`);
   };
   return (
@@ -60,24 +64,19 @@ const Table = () => {
         data={(query) =>
           new Promise((resolve, reject) => {
             // prepare your data and then call resolve like this:
-            let __id = 1;
+            // let x = 1;
             let url = `http://localhost:8000/read?`;
             url += "size=" + query.pageSize;
             url += "&page=" + (query.page + 1);
-            console.log(url);
+            setPage(parseInt(query.page));
+            setSize(parseInt(query.pageSize));
+            // console.log(url);
             fetch(url)
               .then((response) => response.json())
               .then((res) => {
                 console.log(res);
-                const temp = res;
-                for(let i=0;i<temp.length;i++){
-                  console.log(temp[i].idTemp);
-                  temp[i].idTemp=__id++;
-                  outer++;
-                }
-                update(temp);
                 resolve({
-                  data: temp,
+                  data: res.filter(item => item.name.includes(query.search)),
                   page: query.page,
                   totalCount: query.pageSize + 1,
                 });
@@ -89,7 +88,6 @@ const Table = () => {
           onRowAdd: (newData) =>
             new Promise((resolve, reject) => {
               setTimeout(() => {
-                newData.idTemp = outer++;
                 add(newData);
                 resolve();
               }, 1000);
@@ -104,7 +102,6 @@ const Table = () => {
           onRowDelete: (oldData) =>
             new Promise((resolve, reject) => {
               setTimeout(() => {
-                outer--;
                 deleteData(oldData);
                 resolve();
               }, 1000);
